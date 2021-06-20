@@ -1,11 +1,4 @@
-{ pkgs ? import <nixpkgs> { }
-
-, stdenv ? pkgs.stdenv
-, lib ? pkgs.lib
-, nix-index ? pkgs.nix-index
-, nix ? pkgs.nix
-, fzy ? pkgs.fzy
-, makeWrapper ? pkgs.makeWrapper
+{ lib , stdenv , makeWrapper, nix-index, nix, fzy
 
 # We use this to add matchers for stuff that's not in upstream nixpkgs, but is
 # in our own overlay. No fuzzy matching from multiple options here, it's just:
@@ -13,13 +6,14 @@
 , overlayPackages ? []
 }:
 
-stdenv.mkDerivation rec {
-  name = "comma";
+stdenv.mkDerivation {
+  pname = "comma";
+  version = "1.1.0";
 
   src = ./.;
 
-  buildInputs = [ nix-index nix fzy ];
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ nix-index nix fzy ];
 
   installPhase = let
     caseCondition = lib.concatStringsSep "|" (overlayPackages ++ [ "--placeholder--" ]);
