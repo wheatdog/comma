@@ -6,6 +6,8 @@
 # If there are multiple candidates, the user chooses one using `fzy`.
 set -euo pipefail
 
+verlte() { printf '%s\n%s' "$1" "$2" | sort -C -V; }
+
 if [[ $# -lt 1 ]]; then
   >&2 echo "usage: , <program> [arguments]"
   exit 1
@@ -40,5 +42,9 @@ fi
 if [[ -n $install ]]; then
   nix-env -iA "nixpkgs.${attr%%.*}"
 else
-  nix run "nixpkgs.${attr}" -c "${argv0}" "$@"
+  if verlte "$(nix --version | cut -f3 -d' ')" "2.4pre0"; then
+    nix run "nixpkgs.${attr}" -c "${argv0}" "$@"
+  else
+    nix shell "nixpkgs#${attr}" -c "${argv0}" "$@"
+  fi
 fi
