@@ -16,5 +16,9 @@
     defaultPackage = packages.comma;
     apps.comma = flake-utils.lib.mkApp { drv = packages.comma; };
     defaultApp = apps.comma;
-  });
+  }) // {
+    overlay = final: prev: {
+      comma = import ./. { inherit (final) lib stdenv makeWrapper nix-index nix fzy; };
+    };
+  };
 }
